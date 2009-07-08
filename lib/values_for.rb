@@ -26,6 +26,9 @@ module EnumFor
       
       prefix = opts.has_key?(:prefix) ? opts[:prefix] : attribute_s
 
+      # We don't accept the case where an empty string is a valid value, but we should provide a useful error message
+      raise ArgumentError, "Can't use values_for with an empty string" if opts[:has].any?{|v| v.respond_to?(:empty?) && v.empty? }
+      
       # Valid values are most likely Symbols anyway, but coerce them to be safe.
       valid_symbols = opts[:has].map{|v| v.to_sym }
 
@@ -46,7 +49,6 @@ module EnumFor
             read_attribute(attribute) == val_s    #   read_attribute(:foo) == 'foo'  
           end                                     # end
         end
-        
       end
       
       # Accepts assignment both from String and Symbol form of valid values.
@@ -54,15 +56,17 @@ module EnumFor
         merge(:in => valid_symbols | valid_symbols.map{|s| s.to_s } )
       
       # Custom reader method presents attribute value in Symbol form.
-      define_method(attribute_s) do                           # def foo
-        self[attribute].to_sym unless self[attribute].nil?    #   self[:foo].to_sym unless self[:foo].nil?
-      end                                                     # end
+      define_method(attribute_s) do                             # def foo
+        unless self[attribute].nil? || self[attribute].empty?   #   unless self[:foo].nil? || self[:foo].empty?
+          self[attribute].to_sym                                #     self[:foo].to_sym unless self[:foo].nil?
+        end                                                     #   end
+      end                                                       # end
       
       # Custom setter method casting all attribute input to String, allows 
       # assignment from Symbol form.
-      define_method(attribute_s + '=') do |other|  # def foo=(other)
-        self[attribute] = other.to_s               #    self[foo] = other 
-      end                                          # end
+      define_method(attribute_s + '=') do |other|         # def foo=(other)
+        self[attribute] = other.nil? ? nil : other.to_s   #   self[foo] = other unless other.nil?
+      end                                                 # end
       
       # Make collection of all valid attribute Symbols available to user
       # from plural name of attribute as class method.

@@ -130,6 +130,17 @@ describe EnumFor do
     end
   end
   
+  describe "when a user tries to set an empty String as a valid value" do
+    it "should raise an IllegalArgumentError" do
+      lambda {
+        class Food2 < ActiveRecord::Base
+          set_table_name "tacos"
+          values_for :state, :has => ['stuff', '']
+        end
+      }.should raise_error(ArgumentError)
+    end
+  end
+  
   describe "behavior with existing methods of same name" do
     class Balloon < ActiveRecord::Base
       set_table_name "tacos"
@@ -157,6 +168,32 @@ describe EnumFor do
     
     it "should respect :allow_nil setting" do
       Food2.new.should be_valid
+    end
+  end
+  
+  describe "getting and setting nil values" do
+    class Food2 < ActiveRecord::Base
+      set_table_name "tacos"
+      values_for :state, :has => ['stuff', 'morestuff'], :prefix => nil, :allow_nil => true, :message => "is great!"
+    end
+    
+    before do
+      @f = Food2.new
+      @f.state = nil
+    end
+    
+    it "should return a nil value without error" do
+      lambda {
+        @f.state
+      }.should_not raise_error
+    end
+    
+    it "should return nil when nil is set" do
+      @f.state.should == nil
+    end
+    
+    it "should store nil when nil is set" do
+      @f.state_before_type_cast.should == nil
     end
   end
   
