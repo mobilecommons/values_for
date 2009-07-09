@@ -6,7 +6,8 @@ values_for is an ActiveRecord extension enabling the easy use of enumerated type
 
 values_for makes your ActiveRecord-backed class work with an enumerable type.  Instead of existing 
 ActiveRecord plugins such as enum_fu, which store the enumerable attribute as an integer, values_for 
-stores the content of the enumerable attribute in a varchar column of the database.
+stores the content of the enumerable attribute in a varchar column of the database.  The field will
+automatically validate using validates_inclusion_of and accepts all the same options. 
 
 values_for will also optionally create named scopes, predicate methods, and constants defining the 
 possible values for enumerable types on your model.  By default, however, it avoids polluting your
@@ -38,6 +39,9 @@ the attribute name:
   => [ :new, :composed, :served, :eaten ]
 
 == Options
+
+values_for automatically runs validates_inclusion_of on this field.  To override the validation, you can pass
+:allow_nil=>true.  All the validates_inclusion_of options are supported.
 
 values_for will optionally create named scopes, predicate methods, and constants defining values for
 enumerable types on your model.  These may be specified on a case-by-case basis by using the :adds
