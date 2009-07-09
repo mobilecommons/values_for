@@ -221,7 +221,7 @@ describe EnumFor do
         Tequila.state_wormy.size.should == 2
       end
     
-      it "should have two delicious tequilas" do
+      it "should have three delicious tequilas" do
         Tequila.state_delicious.size.should == 3
       end
     end
