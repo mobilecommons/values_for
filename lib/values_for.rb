@@ -1,4 +1,4 @@
-module EnumFor
+module ValuesFor
 
   def self.included(base)
     base.extend(SingletonMethods)
@@ -77,4 +77,4 @@ module EnumFor
   
 end
 
-ActiveRecord::Base.send(:include, EnumFor)
+ActiveRecord::Base.send(:include, ValuesFor)

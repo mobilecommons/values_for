@@ -19,7 +19,7 @@ ActiveRecord::Base.silence do
 end
 
 
-describe EnumFor do
+describe ValuesFor do
   before do
     @taco = Taco.new(:state => 'new')
   end
