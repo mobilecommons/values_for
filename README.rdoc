@@ -40,8 +40,8 @@ the attribute name:
 
 == Options
 
-values_for automatically runs validates_inclusion_of on this field.  To override the validation, you can pass
-:allow_nil=>true.  All the validates_inclusion_of options are supported.
+values_for automatically runs validates_inclusion_of on this field.  All the validates_inclusion_of options are 
+supported. For example, you can pass :allow_nil=>true to allow the field to be nil.
 
 values_for will optionally create named scopes, predicate methods, and constants defining values for
 enumerable types on your model.  These may be specified on a case-by-case basis by using the :adds
