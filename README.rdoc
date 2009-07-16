@@ -44,12 +44,12 @@ values_for automatically runs validates_inclusion_of on this field.  All the val
 supported. For example, you can pass :allow_nil=>true to allow the field to be nil.
 
 values_for will optionally create named scopes, predicate methods, and constants defining values for
-enumerable types on your model.  These may be specified on a case-by-case basis by using the :adds
+enumerable types on your model.  These may be specified on a case-by-case basis by using the :add
 option.  As an example, the following would create an enumerable attribute called "flavor" with the 
 possible values "sour" and "sweet", while creating named scopes, predicate methods, and constants on 
 your class:
 
-  values_for :flavor, :has => [ :sour, :sweet ], :adds => [ :named_scopes, :predicate_methods, :constants ]
+  values_for :flavor, :has => [ :sour, :sweet ], :add => [ :named_scopes, :predicate_methods, :constants ]
 
 The different additive options are described below.
 
@@ -59,7 +59,7 @@ The named_scopes option adds a named scope, with either the default or custom pr
 For example, the following model definition would create a named_scope Taco.flavor_sour on your class:
 
   class Taco < ActiveRecord::Base
-    values_for :flavor, :has => [ :sour, :sweet ], :adds => :named_scopes
+    values_for :flavor, :has => [ :sour, :sweet ], :add => :named_scopes
   end
 
 Afterwards, you may use the named scopes as follows.  Remember to add the prefix!
