@@ -33,8 +33,8 @@ describe ValuesFor do
       @taco.should be_valid
     end
 
-    it "should retrieve a symbol when the model is created with attribute set to string" do
-      @taco.state.should == :new
+    it "should retrieve the attribute as a string" do
+      @taco.state.should == 'new'
     end
 
     it "should be valid when an attribute is set to a valid symbol" do
@@ -74,7 +74,7 @@ describe ValuesFor do
     end
 
     it "should define constants for each type" do
-      WithConstants::STATE_EATEN.should == :eaten
+      WithConstants::STATE_EATEN.should == "eaten"
     end
   end
   
@@ -109,9 +109,9 @@ describe ValuesFor do
       Food.new(:state => 'stuff').should be_valid
     end
     
-    it "should retrieve a symbol when a string is set and the attribute value is a symbol" do
-      f = Food.new(:state => 'stuff')
-      f.state.should == :stuff
+    it "should retrieve a string even if the attribute was set with a symbol" do
+      f = Food.new(:state => :stuff)
+      f.state.should == 'stuff'
     end
   end
   

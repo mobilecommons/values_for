@@ -29,16 +29,15 @@ module ValuesFor
       # We don't accept the case where an empty string is a valid value, but we should provide a useful error message
       raise ArgumentError, "Can't use values_for with an empty string" if opts[:has].any?{|v| v.respond_to?(:empty?) && v.empty? }
       
-      # Valid values are most likely Symbols anyway, but coerce them to be safe.
-      valid_symbols = opts[:has].map{|v| v.to_sym }
+      # Valid values can be symbols or strings, but let's convert them all to strings
+      valid_strings = opts[:has].map{|v| v.to_s }
 
-      valid_symbols.each do |val_sym|
-        val_s = val_sym.to_s
+      valid_strings.each do |val_s|
         
         prefixed_val = [ prefix, val_s ].compact.join('_')
         
         # Create +optional+ constants
-        const_set(prefixed_val.upcase, val_sym) if additives.include?(:constants)
+        const_set(prefixed_val.upcase, val_s) if additives.include?(:constants)
         
         # Create +optional+ named scopes
         named_scope prefixed_val, :conditions => { attribute => val_s } if additives.include?(:named_scopes)
@@ -53,12 +52,11 @@ module ValuesFor
       
       # Accepts assignment both from String and Symbol form of valid values.
       validates_inclusion_of attribute, opts.except(:has, :prefix, :add).
-        merge(:in => valid_symbols | valid_symbols.map{|s| s.to_s } )
+        merge(:in => valid_strings | valid_strings.map{|s| s.to_sym } )
       
-      # Custom reader method presents attribute value in Symbol form.
       define_method(attribute_s) do                             # def foo
         unless self[attribute].nil? || self[attribute].empty?   #   unless self[:foo].nil? || self[:foo].empty?
-          self[attribute].to_sym                                #     self[:foo].to_sym unless self[:foo].nil?
+          self[attribute].to_s                                  #     self[:foo].to_s
         end                                                     #   end
       end                                                       # end
       
