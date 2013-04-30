@@ -33,20 +33,25 @@ module ValuesFor
       valid_strings = opts[:has].map{|v| v.to_s }
 
       valid_strings.each do |val_s|
-        
         prefixed_val = [ prefix, val_s ].compact.join('_')
-        
+        prefixed_val = parameterize_without_downcase(prefixed_val,'_')
+
         # Create +optional+ constants
-        const_set(prefixed_val.upcase, val_s) if additives.include?(:constants)
+        const_set(prefixed_val.upcase, val_s) if additives.include?(:constants) && !const_defined?(prefixed_val.upcase)
         
         # Create +optional+ named scopes
         named_scope prefixed_val, :conditions => { attribute => val_s } if additives.include?(:named_scopes)
 
         # Create +optional+ predicate methods, but don't overwrite existing methods
-        if additives.include?(:predicate_methods) && !self.instance_methods.include?(prefixed_val)
-          define_method(prefixed_val + '?') do    # def foo?
-            read_attribute(attribute) == val_s    #   read_attribute(:foo) == 'foo'  
-          end                                     # end
+        if additives.include?(:predicate_methods)
+          predicate_val = "#{prefixed_val}?"
+          if (instance_methods + private_instance_methods).include?(predicate_val)
+            LOG.warn "Can not create predicate method #{predicate_val} because #{self} already responds to it" if defined?(LOG) && LOG.respond_to?(:warn)
+          else
+            define_method(predicate_val) do    # def foo?
+              read_attribute(attribute) == val_s    #   read_attribute(:foo) == 'foo'  
+            end                                     # end
+          end
         end
       end
       
@@ -70,6 +75,21 @@ module ValuesFor
       # from plural name of attribute as class method.
       cattr_reader plural_attribute.to_sym
       class_variable_set(:"@@#{plural_attribute}", opts[:has])    
+    end
+
+
+    def parameterize_without_downcase(string, sep = '-')
+      parameterized_string = string.dup
+      # Turn unwanted chars into the seperator
+      parameterized_string.gsub!(/[^a-z0-9\-_]+/i, sep)
+      unless sep.blank?
+        re_sep = Regexp.escape(sep)
+        # No more than one of the separator in a row.
+        parameterized_string.gsub!(/#{re_sep}{2,}/, sep)
+        # Remove leading/trailing separator.
+        parameterized_string.gsub!(/^#{re_sep}|#{re_sep}$/i, '')
+      end
+      parameterized_string
     end
   end
   
