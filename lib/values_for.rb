@@ -37,7 +37,16 @@ module ValuesFor
         prefixed_val = parameterize_without_downcase(prefixed_val,'_')
 
         # Create +optional+ constants
-        const_set(prefixed_val.upcase, val_s) if additives.include?(:constants) && !const_defined?(prefixed_val.upcase)
+        if additives.include?(:constants)
+          constant_name = prefixed_val.upcase
+          const_already_defined = (RUBY_VERSION < '1.9') ? const_defined?(constant_name) : const_defined?(constant_name, false) 
+          if const_already_defined
+            LOG.warn "values_for: Can not create constant #{constant_name} because it's already defined" if defined?(LOG) && LOG.respond_to?(:warn)
+          else
+            const_set(constant_name, val_s)
+          end
+        end
+        
         
         # Create +optional+ named scopes
         named_scope prefixed_val, :conditions => { attribute => val_s } if additives.include?(:named_scopes)
@@ -46,7 +55,7 @@ module ValuesFor
         if additives.include?(:predicate_methods)
           predicate_val = "#{prefixed_val}?"
           if (instance_methods + private_instance_methods).include?(predicate_val)
-            LOG.warn "Can not create predicate method #{predicate_val} because #{self} already responds to it" if defined?(LOG) && LOG.respond_to?(:warn)
+            LOG.warn "values_for: Can not create predicate method #{predicate_val} because #{self} already responds to it" if defined?(LOG) && LOG.respond_to?(:warn)
           else
             define_method(predicate_val) do    # def foo?
               read_attribute(attribute) == val_s    #   read_attribute(:foo) == 'foo'  
