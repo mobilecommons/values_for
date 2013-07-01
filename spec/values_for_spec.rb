@@ -45,6 +45,10 @@ describe ValuesFor do
       Taco.new(:state => :bogus).should_not be_valid
     end
 
+    it "should have a detailed error message for invalid" do
+      Taco.new(:state => :bogus).tap(&:valid?).errors[:state].should == "bogus is not included in the list"
+    end
+
     it "should not create a valid model when given an invalid state" do
       Taco.create(:state => 'barfed').should_not be_valid
     end

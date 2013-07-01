@@ -65,8 +65,11 @@ module ValuesFor
       end
 
       # Accepts assignment both from String and Symbol form of valid values.
-      validates_inclusion_of attribute, opts.except(:has, :prefix, :add).
-        merge(:in => valid_strings | valid_strings.map{|s| s.to_sym } )
+      validation_options = {:message => "%{value} is not included in the list"}
+      validation_options.merge!(opts.except(:has, :prefix, :add))
+      validation_options.merge!(:in => valid_strings | valid_strings.map{|s| s.to_sym })
+
+      validates_inclusion_of attribute, validation_options
 
       define_method(attribute_s) do                             # def foo
         unless self[attribute].nil? || self[attribute].empty?   #   unless self[:foo].nil? || self[:foo].empty?
