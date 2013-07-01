@@ -4,12 +4,12 @@ values_for is an ActiveRecord extension enabling the easy use of enumerated type
 
 == Description
 
-values_for makes your ActiveRecord-backed class work with an enumerable type.  Instead of existing 
-ActiveRecord plugins such as enum_fu, which store the enumerable attribute as an integer, values_for 
+values_for makes your ActiveRecord-backed class work with an enumerable type.  Instead of existing
+ActiveRecord plugins such as enum_fu, which store the enumerable attribute as an integer, values_for
 stores the content of the enumerable attribute in a varchar column of the database.  The field will
-automatically validate using validates_inclusion_of and accepts all the same options. 
+automatically validate using validates_inclusion_of and accepts all the same options.
 
-values_for will also optionally create named scopes, predicate methods, and constants defining the 
+values_for will also optionally create named scopes, predicate methods, and constants defining the
 possible values for enumerable types on your model.  By default, however, it avoids polluting your
 model with things you may not need unless these features are specifically requested.
 
@@ -35,18 +35,18 @@ migration has created a column of type VARCHAR on the table "taco".
 For all values_for-enabled models, valid states are able to be read for an attribute by calling the plural of
 the attribute name:
 
-  >> Taco.states 
+  >> Taco.states
   => [ :new, :composed, :served, :eaten ]
 
 == Options
 
-values_for automatically runs validates_inclusion_of on this field.  All the validates_inclusion_of options are 
+values_for automatically runs validates_inclusion_of on this field.  All the validates_inclusion_of options are
 supported. For example, you can pass :allow_nil=>true to allow the field to be nil.
 
 values_for will optionally create named scopes, predicate methods, and constants defining values for
 enumerable types on your model.  These may be specified on a case-by-case basis by using the :add
-option.  As an example, the following would create an enumerable attribute called "flavor" with the 
-possible values "sour" and "sweet", while creating named scopes, predicate methods, and constants on 
+option.  As an example, the following would create an enumerable attribute called "flavor" with the
+possible values "sour" and "sweet", while creating named scopes, predicate methods, and constants on
 your class:
 
   values_for :flavor, :has => [ :sour, :sweet ], :add => [ :named_scopes, :predicate_methods, :constants ]
@@ -79,29 +79,29 @@ This option is only enabled when the additive option predicate_methods is specif
 
 === Constants
 
-values_for optionally defines constants corresponding to each of the valid enumerable types on your model.  
-For example, if you have an enumerable column called "states" with valid states :starting and :finished, 
-values_for would define constants on your model Model::STATE_STARTING and Model::STATE_FINISHED with the 
+values_for optionally defines constants corresponding to each of the valid enumerable types on your model.
+For example, if you have an enumerable column called "states" with valid states :starting and :finished,
+values_for would define constants on your model Model::STATE_STARTING and Model::STATE_FINISHED with the
 contents of these constants :starting and :finished respectively.  This is only enabled when the additive
 option :constants is specified.
-  
+
 == Configuration
 
 values_for by default adds the attribute being modified as a prefix to constant declarations, named scopes,
-and predicate methods.  If you wish to modify this prefix, pass the :prefix option to values_for.  You may 
+and predicate methods.  If you wish to modify this prefix, pass the :prefix option to values_for.  You may
 also omit the addition of the prefix by passing :prefix => nil to values_for. Example:
 
   class Taco < ActiveRecord::Base
     values_for :state, :has => [ :new, :composed, :served, :eaten ], :prefix => 'wacky'
   end
-  
+
 This makes Taco respond to named scopes like Taco.wacky_composed instead of the default, which
 would have prefixed the named_scopes with the name of the attribute.
 
 == Notes
 
 This plugin doesn't implement default values for a model.  If this behavior is desired, you may be interested
-in the default_value_for plugin (available http://github.com/FooBarWidget/default_value_for/tree/master), 
+in the default_value_for plugin (available http://github.com/FooBarWidget/default_value_for/tree/master),
 which has been successfully tested with values_for.
 
 == Authors
