@@ -50,9 +50,9 @@ module ValuesFor
 
         # Create +optional+ named scopes, Rails <= 2.3.x
         named_scope prefixed_val, :conditions => { attribute => val_s } if additives.include?(:named_scopes)
-        
+
         # Create +optional+ scopes, Rails >= 3.0.x
-        scope prefixed_val, where(attribute => val_s) if additives.include?(:scopes)
+        scope prefixed_val, lambda{ where(attribute => val_s) } if additives.include?(:scopes)
 
         # Create +optional+ predicate methods, but don't overwrite existing methods
         if additives.include?(:predicate_methods)
